@@ -21,11 +21,11 @@ import data.lib.kubernetes
 
 types := ["master", "worker"]
 
-validate_kubelet_tls_key_file(sp) := {"kubeletTlsPrivateKeyFileArgumentSet": tls_key_file} {
+validate_kubelet_tls_key_file(sp) := {"kubeletTlsPrivateKeyFileArgumentSet": violation} {
 	sp.kind == "NodeInfo"
 	sp.type == types[_]
-	tls_key_file := sp.info.kubeletTlsPrivateKeyFileArgumentSet.values[_]
-	not endswith(tls_key_file, ".key")
+	violation := {tls_key_file | tls_key_file = sp.info.kubeletTlsPrivateKeyFileArgumentSet.values[_]; not endswith(tls_key_file, ".key")}
+	count(violation) > 0
 }
 
 validate_kubelet_tls_key_file(sp) := {"kubeletTlsPrivateKeyFileArgumentSet": tls_key_file} {

@@ -21,12 +21,12 @@ import data.lib.kubernetes
 
 types := ["master", "worker"]
 
-validate_kube_config_file_ownership(sp) := {"kubeconfigFileExistsOwnership": ownership} {
+validate_kube_config_file_ownership(sp) := {"kubeconfigFileExistsOwnership": violation} {
 	sp.kind == "NodeInfo"
 	sp.type == types[_]
 	count(sp.info.kubeconfigFileExistsOwnership) > 0
-	ownership := sp.info.kubeconfigFileExistsOwnership.values[_]
-	not ownership == "root:root"
+	violation := {ownership | ownership = sp.info.kubeconfigFileExistsOwnership.values[_]; ownership != "root:root"}
+	count(violation) > 0
 }
 
 deny[res] {

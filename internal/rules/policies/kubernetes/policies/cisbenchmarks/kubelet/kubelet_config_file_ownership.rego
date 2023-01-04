@@ -21,11 +21,11 @@ import data.lib.kubernetes
 
 types := ["master", "worker"]
 
-validate_kubelet_file_ownership(sp) := {"kubeletConfFileOwnership": ownership} {
+validate_kubelet_file_ownership(sp) := {"kubeletConfFileOwnership": violation} {
 	sp.kind == "NodeInfo"
 	sp.type == types[_]
-	ownership := sp.info.kubeletConfFileOwnership.values[_]
-	not ownership == "root:root"
+	violation := {ownership | ownership = sp.info.kubeletConfFileOwnership.values[_]; not ownership == "root:root"}
+	count(violation) > 0
 }
 
 deny[res] {

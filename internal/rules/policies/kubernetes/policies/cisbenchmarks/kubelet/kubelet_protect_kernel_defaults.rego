@@ -21,11 +21,11 @@ import data.lib.kubernetes
 
 types := ["master", "worker"]
 
-validate_kubelet_anonymous_auth_set(sp) := {"kubeletProtectKernelDefaultsArgumentSet": kernel_defaults} {
+validate_kubelet_anonymous_auth_set(sp) := {"kubeletProtectKernelDefaultsArgumentSet": violation} {
 	sp.kind == "NodeInfo"
 	sp.type == types[_]
-	kernel_defaults := sp.info.kubeletProtectKernelDefaultsArgumentSet.values[_]
-	not kernel_defaults == "true"
+	violation := {kernel_defaults | kernel_defaults = sp.info.kubeletProtectKernelDefaultsArgumentSet.values[_]; not kernel_defaults == "true"}
+	count(violation) > 0
 }
 
 validate_kubelet_anonymous_auth_set(sp) := {"kubeletProtectKernelDefaultsArgumentSet": kernel_defaults} {

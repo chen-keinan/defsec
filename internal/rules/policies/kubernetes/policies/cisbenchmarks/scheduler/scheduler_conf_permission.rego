@@ -19,11 +19,11 @@ package builtin.kubernetes.KCV0062
 
 import data.lib.kubernetes
 
-validate_conf_permission(sp) := {"schedulerConfFilePermissions": permission} {
+validate_conf_permission(sp) := {"schedulerConfFilePermissions": violation} {
 	sp.kind == "NodeInfo"
 	sp.type == "master"
-	permission := sp.info.schedulerConfFilePermissions.values[_]
-	permission > 600
+	violation := {permission | permission = sp.info.schedulerConfFilePermissions.values[_]; permission > 600}
+	count(violation) > 0
 }
 
 deny[res] {

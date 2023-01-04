@@ -19,11 +19,11 @@ package builtin.kubernetes.KCV0066
 
 import data.lib.kubernetes
 
-validate_pki_directory_ownership(sp) := {"kubePKIDirectoryFileOwnership": ownership} {
+validate_pki_directory_ownership(sp) := {"kubePKIDirectoryFileOwnership": violation} {
 	sp.kind == "NodeInfo"
 	sp.type == "master"
-	ownership := sp.info.kubePKIDirectoryFileOwnership.values[_]
-	not ownership == "root:root"
+	violation := {ownership | ownership = sp.info.kubePKIDirectoryFileOwnership.values[_]; not ownership == "root:root"}
+	count(violation) > 0
 }
 
 deny[res] {

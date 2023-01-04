@@ -21,11 +21,11 @@ import data.lib.kubernetes
 
 types := ["master", "worker"]
 
-validate_kubelet_read_only_set(sp) := {"kubeletReadOnlyPortArgumentSet": read_only} {
+validate_kubelet_read_only_set(sp) := {"kubeletReadOnlyPortArgumentSet": violation} {
 	sp.kind == "NodeInfo"
 	sp.type == types[_]
-	read_only := sp.info.kubeletReadOnlyPortArgumentSet.values[_]
-	not read_only == 0
+	violation := {read_only | read_only = sp.info.kubeletReadOnlyPortArgumentSet.values[_]; not read_only == 0}
+	count(violation) > 0
 }
 
 validate_kubelet_read_only_set(sp) := {"kubeletReadOnlyPortArgumentSet": read_only} {

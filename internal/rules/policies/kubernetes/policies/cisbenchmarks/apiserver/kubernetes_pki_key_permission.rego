@@ -19,11 +19,11 @@ package builtin.kubernetes.KCV0067
 
 import data.lib.kubernetes
 
-validate_pki_key_permission(sp) := {"kubePKIKeyFilePermissions": permission} {
+validate_pki_key_permission(sp) := {"kubePKIKeyFilePermissions": violation} {
 	sp.kind == "NodeInfo"
 	sp.type == "master"
-	permission := sp.info.kubePKIKeyFilePermissions.values[_]
-	permission > 600
+	violation := {permission | permission = sp.info.kubePKIKeyFilePermissions.values[_]; permission > 600}
+	count(violation) > 0
 }
 
 deny[res] {

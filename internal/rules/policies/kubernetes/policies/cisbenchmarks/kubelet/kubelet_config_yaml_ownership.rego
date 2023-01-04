@@ -21,12 +21,12 @@ import data.lib.kubernetes
 
 types := ["master", "worker"]
 
-validate_kubelet_config_yaml_ownership(sp) := {"kubeletConfigYamlConfigurationFileOwnership": ownership} {
+validate_kubelet_config_yaml_ownership(sp) := {"kubeletConfigYamlConfigurationFileOwnership": violation} {
 	sp.kind == "NodeInfo"
 	sp.type == types[_]
 	count(sp.info.kubeletConfigYamlConfigurationFileOwnership) > 0
-	ownership := sp.info.kubeletConfigYamlConfigurationFileOwnership.values[_]
-	not ownership == "root:root"
+	violation := {ownership | ownership = sp.info.kubeletConfigYamlConfigurationFileOwnership.values[_]; not ownership == "root:root"}
+	count(violation) > 0
 }
 
 deny[res] {

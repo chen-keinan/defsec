@@ -21,12 +21,12 @@ import data.lib.kubernetes
 
 types := ["master", "worker"]
 
-validate_kube_config_file_permission(sp) := {"kubeconfigFileExistsPermissions": permission} {
+validate_kube_config_file_permission(sp) := {"kubeconfigFileExistsPermissions": violation} {
 	sp.kind == "NodeInfo"
 	sp.type == types[_]
 	count(sp.info.kubeconfigFileExistsPermissions) > 0
-	permission := sp.info.kubeconfigFileExistsPermissions.values[_]
-	permission > 600
+	violation := {permission | permission = sp.info.kubeconfigFileExistsPermissions.values[_]; permission > 600}
+	count(violation) > 0
 }
 
 deny[res] {

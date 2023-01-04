@@ -21,11 +21,11 @@ import data.lib.kubernetes
 
 types := ["master", "worker"]
 
-validate_kubelet_authorization_mode(sp) := {"kubeletAuthorizationModeArgumentSet": authorization_mode} {
+validate_kubelet_authorization_mode(sp) := {"kubeletAuthorizationModeArgumentSet": violation} {
 	sp.kind == "NodeInfo"
 	sp.type == types[_]
-	authorization_mode := sp.info.kubeletAuthorizationModeArgumentSet.values[_]
-	authorization_mode == "AlwaysAllow"
+	violation := {authorization_mode | authorization_mode = sp.info.kubeletAuthorizationModeArgumentSet.values[_]; authorization_mode == "AlwaysAllow"}
+	count(violation) > 0
 }
 
 validate_kubelet_authorization_mode(sp) := {"kubeletAuthorizationModeArgumentSet": authorization_mode} {

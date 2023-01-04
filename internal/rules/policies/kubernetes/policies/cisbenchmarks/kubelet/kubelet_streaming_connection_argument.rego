@@ -21,11 +21,11 @@ import data.lib.kubernetes
 
 types := ["master", "worker"]
 
-validate_kubelet_streaming_connection_idle_timeout_set(sp) := {"kubeletStreamingConnectionIdleTimeoutArgumentSet": streaming_connection_idle_timeout} {
+validate_kubelet_streaming_connection_idle_timeout_set(sp) := {"kubeletStreamingConnectionIdleTimeoutArgumentSet": violation} {
 	sp.kind == "NodeInfo"
 	sp.type == types[_]
-	streaming_connection_idle_timeout := sp.info.kubeletStreamingConnectionIdleTimeoutArgumentSet.values[_]
-	streaming_connection_idle_timeout == 0
+	violation := {streaming_connection_idle_timeout | streaming_connection_idle_timeout = sp.info.kubeletStreamingConnectionIdleTimeoutArgumentSet.values[_]; streaming_connection_idle_timeout == 0}
+	count(violation) > 0
 }
 
 deny[res] {

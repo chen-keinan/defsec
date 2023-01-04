@@ -21,12 +21,12 @@ import data.lib.kubernetes
 
 types := ["master", "worker"]
 
-validate_kubelet_config_yaml_permission(sp) := {"kubeletConfigYamlConfigurationFilePermission": permission} {
+validate_kubelet_config_yaml_permission(sp) := {"kubeletConfigYamlConfigurationFilePermission": violation} {
 	sp.kind == "NodeInfo"
 	sp.type == types[_]
 	count(sp.info.kubeletConfigYamlConfigurationFilePermission) > 0
-	permission := sp.info.kubeletConfigYamlConfigurationFilePermission.values[_]
-	permission > 600
+	violation := {permission | permission = sp.info.kubeletConfigYamlConfigurationFilePermission.values[_]; permission > 600}
+	count(violation) > 0
 }
 
 deny[res] {

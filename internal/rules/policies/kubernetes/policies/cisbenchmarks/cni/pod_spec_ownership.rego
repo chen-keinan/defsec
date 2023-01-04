@@ -19,11 +19,11 @@ package builtin.kubernetes.KCV0057
 
 import data.lib.kubernetes
 
-validate_spec_ownership(sp) := {"containerNetworkInterfaceFileOwnership": ownership} {
+validate_spec_ownership(sp) := {"containerNetworkInterfaceFileOwnership": violation} {
 	sp.kind == "NodeInfo"
 	sp.type == "master"
-	ownership := sp.info.containerNetworkInterfaceFileOwnership.values[_]
-	not ownership == "root:root"
+	violation := {ownership | ownership = sp.info.containerNetworkInterfaceFileOwnership.values[_]; not ownership == "root:root"}
+	count(violation) > 0
 }
 
 deny[res] {

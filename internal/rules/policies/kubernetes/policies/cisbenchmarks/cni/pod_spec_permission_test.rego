@@ -27,7 +27,7 @@ test_validate_spec_permission_higher_600 {
 		"apiVersion": "v1",
 		"kind": "NodeInfo",
 		"type": "master",
-		"info": {"containerNetworkInterfaceFilePermissions": {"values": [700, 600]}},
+		"info": {"containerNetworkInterfaceFilePermissions": {"values": [700, 755]}},
 	}
 
 	count(r) == 1

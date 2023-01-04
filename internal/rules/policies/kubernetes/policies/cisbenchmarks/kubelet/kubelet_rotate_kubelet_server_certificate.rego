@@ -21,11 +21,11 @@ import data.lib.kubernetes
 
 types := ["master", "worker"]
 
-validate_kubelet_rotate_kubelet_server_certificate(sp) := {"kubeletRotateKubeletServerCertificateArgumentSet": rotate_kubelet_server_certificate} {
+validate_kubelet_rotate_kubelet_server_certificate(sp) := {"kubeletRotateKubeletServerCertificateArgumentSet": violation} {
 	sp.kind == "NodeInfo"
 	sp.type == types[_]
-	rotate_kubelet_server_certificate := sp.info.kubeletRotateKubeletServerCertificateArgumentSet.values[_]
-	rotate_kubelet_server_certificate == "false"
+	violation := {rotate_kubelet_server_certificate | rotate_kubelet_server_certificate = sp.info.kubeletRotateKubeletServerCertificateArgumentSet.values[_]; rotate_kubelet_server_certificate == "false"}
+	count(violation) > 0
 }
 
 validate_kubelet_rotate_kubelet_server_certificate(sp) := {"kubeletRotateKubeletServerCertificateArgumentSet": rotate_kubelet_server_certificate} {

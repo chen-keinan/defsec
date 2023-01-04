@@ -21,11 +21,11 @@ import data.lib.kubernetes
 
 types := ["master", "worker"]
 
-validate_kubelet_anonymous_auth_set(sp) := {"kubeletAnonymousAuthArgumentSet": anonymous_auth} {
+validate_kubelet_anonymous_auth_set(sp) := {"kubeletAnonymousAuthArgumentSet": violation} {
 	sp.kind == "NodeInfo"
 	sp.type == types[_]
-	anonymous_auth := sp.info.kubeletAnonymousAuthArgumentSet.values[_]
-	anonymous_auth == "true"
+	violation := {anonymous_auth | anonymous_auth = sp.info.kubeletAnonymousAuthArgumentSet.values[_]; anonymous_auth == "true"}
+	count(violation) > 0
 }
 
 validate_kubelet_anonymous_auth_set(sp) := {"kubeletAnonymousAuthArgumentSet": anonymous_auth} {

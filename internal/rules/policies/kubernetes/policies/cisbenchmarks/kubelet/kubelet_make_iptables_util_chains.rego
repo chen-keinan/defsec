@@ -21,11 +21,11 @@ import data.lib.kubernetes
 
 types := ["master", "worker"]
 
-validate_kubelet_iptables_util_chains_set(sp) := {"kubeletMakeIptablesUtilChainsArgumentSet": iptables_util_chains} {
+validate_kubelet_iptables_util_chains_set(sp) := {"kubeletMakeIptablesUtilChainsArgumentSet": violation} {
 	sp.kind == "NodeInfo"
 	sp.type == types[_]
-	iptables_util_chains := sp.info.kubeletMakeIptablesUtilChainsArgumentSet.values[_]
-	not iptables_util_chains == "true"
+	violation := {iptables_util_chains | iptables_util_chains = sp.info.kubeletMakeIptablesUtilChainsArgumentSet.values[_]; not iptables_util_chains == "true"}
+	count(violation) > 0
 }
 
 deny[res] {

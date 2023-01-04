@@ -21,11 +21,11 @@ import data.lib.kubernetes
 
 types := ["master", "worker"]
 
-validate_client_ca_set(sp) := {"kubeletClientCaFileArgumentSet": client_ca} {
+validate_client_ca_set(sp) := {"kubeletClientCaFileArgumentSet": violation} {
 	sp.kind == "NodeInfo"
 	sp.type == types[_]
-	client_ca := sp.info.kubeletClientCaFileArgumentSet.values[_]
-	client_ca == ""
+	violation := {client_ca | client_ca = sp.info.kubeletClientCaFileArgumentSet.values[_]; client_ca == ""}
+	count(violation) > 0
 }
 
 validate_client_ca_set(sp) := {"kubeletClientCaFileArgumentSet": client_ca} {

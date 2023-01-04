@@ -21,11 +21,11 @@ import data.lib.kubernetes
 
 types := ["master", "worker"]
 
-validate_certificate_authorities_file_permission(sp) := {"certificateAuthoritiesFilePermissions": permission} {
+validate_certificate_authorities_file_permission(sp) := {"certificateAuthoritiesFilePermissions": violation} {
 	sp.kind == "NodeInfo"
 	sp.type == types[_]
-	permission := sp.info.certificateAuthoritiesFilePermissions.values[_]
-	permission > 600
+	violation := {permission | permission = sp.info.certificateAuthoritiesFilePermissions.values[_]; permission > 600}
+	count(violation) > 0
 }
 
 deny[res] {

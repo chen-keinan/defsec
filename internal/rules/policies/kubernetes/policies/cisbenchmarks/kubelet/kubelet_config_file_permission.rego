@@ -21,11 +21,11 @@ import data.lib.kubernetes
 
 types := ["master", "worker"]
 
-validate_kubelet_file_permission(sp) := {"kubeletConfFilePermissions": permission} {
+validate_kubelet_file_permission(sp) := {"kubeletConfFilePermissions": violation} {
 	sp.kind == "NodeInfo"
 	sp.type == types[_]
-	permission := sp.info.kubeletConfFilePermissions.values[_]
-	permission > 600
+	violation := {permission | permission = sp.info.kubeletConfFilePermissions.values[_]; permission > 600}
+	count(violation) > 0
 }
 
 deny[res] {

@@ -21,11 +21,11 @@ import data.lib.kubernetes
 
 types := ["master", "worker"]
 
-validate_kubelet_event_qps_set(sp) := {"kubeletEventQpsArgumentSet": event_qps} {
+validate_kubelet_event_qps_set(sp) := {"kubeletEventQpsArgumentSet": violation} {
 	sp.kind == "NodeInfo"
 	sp.type == types[_]
-	event_qps := sp.info.kubeletEventQpsArgumentSet.values[_]
-	event_qps < 0
+	violation := {event_qps | event_qps = sp.info.kubeletEventQpsArgumentSet.values[_]; event_qps < 0}
+	count(violation) > 0
 }
 
 deny[res] {

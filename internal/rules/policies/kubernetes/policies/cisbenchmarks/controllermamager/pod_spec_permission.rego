@@ -19,11 +19,11 @@ package builtin.kubernetes.KCV0050
 
 import data.lib.kubernetes
 
-validate_spec_permission(sp) := {"kubeControllerManagerSpecFilePermission": permission} {
+validate_spec_permission(sp) := {"kubeControllerManagerSpecFilePermission": violation} {
 	sp.kind == "NodeInfo"
 	sp.type == "master"
-	permission := sp.info.kubeControllerManagerSpecFilePermission.values[_]
-	permission > 600
+	violation := {permission | permission = sp.info.kubeControllerManagerSpecFilePermission.values[_]; permission > 600}
+	count(violation) > 0
 }
 
 deny[res] {

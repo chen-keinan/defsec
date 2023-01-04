@@ -19,11 +19,11 @@ package builtin.kubernetes.KCV0048
 
 import data.lib.kubernetes
 
-validate_spec_permission(sp) := {"kubeAPIServerSpecFilePermission": permission} {
+validate_spec_permission(sp) := {"kubeAPIServerSpecFilePermission": violation} {
 	sp.kind == "NodeInfo"
 	sp.type == "master"
-	permission := sp.info.kubeAPIServerSpecFilePermission.values[_]
-	permission > 600
+	violation := {permission | permission = sp.info.kubeAPIServerSpecFilePermission.values[_]; permission > 600}
+	count(violation) > 0
 }
 
 deny[res] {

@@ -21,11 +21,11 @@ import data.lib.kubernetes
 
 types := ["master", "worker"]
 
-validate_certificate_authorities_ownership(sp) := {"certificateAuthoritiesFileOwnership": ownership} {
+validate_certificate_authorities_ownership(sp) := {"certificateAuthoritiesFileOwnership": violation} {
 	sp.kind == "NodeInfo"
 	sp.type == types[_]
-	ownership := sp.info.certificateAuthoritiesFileOwnership.values[_]
-	not ownership == "root:root"
+	violation := {ownership | ownership = sp.info.certificateAuthoritiesFileOwnership.values[_]; not ownership == "root:root"}
+	count(violation) > 0
 }
 
 deny[res] {

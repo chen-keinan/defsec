@@ -21,11 +21,11 @@ import data.lib.kubernetes
 
 types := ["master", "worker"]
 
-validate_kubelet_tls_cert_file(sp) := {"kubeletTlsCertFileTlsArgumentSet": tls_cert_file} {
+validate_kubelet_tls_cert_file(sp) := {"kubeletTlsCertFileTlsArgumentSet": violation} {
 	sp.kind == "NodeInfo"
 	sp.type == types[_]
-	tls_cert_file := sp.info.kubeletTlsCertFileTlsArgumentSet.values[_]
-	not endswith(tls_cert_file, ".crt")
+	violation := {tls_cert_file | tls_cert_file = sp.info.kubeletTlsCertFileTlsArgumentSet.values[_]; not endswith(tls_cert_file, ".crt")}
+	count(violation) > 0
 }
 
 validate_kubelet_tls_cert_file(sp) := {"kubeletTlsCertFileTlsArgumentSet": tls_cert_file} {

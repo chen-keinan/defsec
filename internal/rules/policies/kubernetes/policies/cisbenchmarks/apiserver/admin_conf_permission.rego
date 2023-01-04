@@ -19,11 +19,11 @@ package builtin.kubernetes.KCV0060
 
 import data.lib.kubernetes
 
-validate_conf_permission(sp) := {"adminConfFilePermissions": permission} {
+validate_conf_permission(sp) := {"adminConfFilePermissions": violation} {
 	sp.kind == "NodeInfo"
 	sp.type == "master"
-	permission := sp.info.adminConfFilePermissions.values[_]
-	permission > 600
+	violation := {permission | permission = sp.info.adminConfFilePermissions.values[_]; permission > 600}
+	count(violation) > 0
 }
 
 deny[res] {
